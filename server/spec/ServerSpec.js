@@ -11,7 +11,7 @@ var waitForThen = function (test, cb) {
 };
 
 describe('Node Server Request Listener Function', function() {
-  it('Should answer GET requests for /classes/messages with a 200 status code', function() {
+  it('SERVER Should answer GET requests for /classes/messages with a 200 status code', function() {
     // This is a fake server request. Normally, the server would provide this,
     // but we want to test our function's behavior totally independent of the server code
     var req = new stubs.request('/classes/messages', 'GET');
@@ -23,7 +23,7 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
-  it('Should send back parsable stringified JSON', function() {
+  it('SERVER Should send back parsable stringified JSON', function() {
     var req = new stubs.request('/classes/messages', 'GET');
     var res = new stubs.response();
 
@@ -33,7 +33,7 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
-  it('Should send back an object', function() {
+  it('SERVER Should send back an object', function() {
     var req = new stubs.request('/classes/messages', 'GET');
     var res = new stubs.response();
 
@@ -44,7 +44,7 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
-  it('Should send an object containing a `results` array', function() {
+  it('SERVER Should send an object containing a `results` array', function() {
     var req = new stubs.request('/classes/messages', 'GET');
     var res = new stubs.response();
 
@@ -56,7 +56,7 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
-  it('Should accept posts to /classes/room', function() {
+  it('SERVER Should accept posts to /classes/room', function() {
     var stubMsg = {
       username: 'Jono',
       message: 'Do my bidding!'
@@ -75,14 +75,16 @@ describe('Node Server Request Listener Function', function() {
     expect(res._ended).to.equal(true);
   });
 
-  it('Should respond with messages that were previously posted', function() {
+  it('SERVER Should respond with messages that were previously posted', function() {
     var stubMsg = {
       username: 'Jono',
       message: 'Do my bidding!'
     };
     var req = new stubs.request('/classes/messages', 'POST', stubMsg);
     var res = new stubs.response();
-
+    
+    // console.log('REQ FROM SERVER SPEC');
+    // console.log(req);
     handler.requestHandler(req, res);
 
     expect(res._responseCode).to.equal(201);
@@ -102,7 +104,7 @@ describe('Node Server Request Listener Function', function() {
   });
 
 
-  it('Should 404 when asked for a nonexistent file', function() {
+  it('SERVER Should 404 when asked for a nonexistent file', function() {
     var req = new stubs.request('/arglebargle', 'GET');
     var res = new stubs.response();
 

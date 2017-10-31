@@ -13,6 +13,11 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 var messageData = require('./messages.js');
 
+var saveMessage = function(string) {
+  messageData.messages.push(string);
+};
+
+
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
 // are on different domains, for instance, your chat client.
@@ -57,64 +62,50 @@ var requestHandler = function(request, response) {
 
   // The outgoing status.
   var statusCode;
-  // check request.method
-  //if GET:
+  // console.log(request);
+  
+  if (request.method === 'OPTIONS') {
+    statusCode = 200;
+    response.writeHead(statusCode, headers);
+    response.end();
+    return;
+  }
   if (request.method === 'GET') {
-    // if endpoint is correct:
     if (request.url === '/classes/messages') {
-      // create response
       statusCode = 200;
-      // write head (status 200)
-      // .writeHead() writes to the request line and headers of the response,
-      // which includes the status and all headers.
       response.writeHead(statusCode, headers);
-      // write body with data array storage (all of it?
-        // or do we determine how many to send back?
-        // how do we deal with the "order: -createdAt"?
-        // end
-      console.log(messageData.responseData);
+      // console.log(messageData.responseData);
       response.end(JSON.stringify(messageData.responseData));
-    } else {
-    // else
-      // send back 404 status and no data
-      statusCode = 404;
-      response.writeHead(statusCode, headers);
-      response.end();
-    }
-  }
-  // if POST: 
-  if (request.method === 'POST') {
-    if (request.url === '/classes/messages') {
-    // if endpoint is correct:
-      // write head (status 201)
-      // add incoming data to data array storage
-        // parse out createdAt, id?, roomname, text,
-        // updatedAt (same as createdAt), username
-      var messageObj = {
-        username: request._postData.username,
-        message: request._postData.message
-      };
-      messageData.messages.push(messageObj);
+      return;
+    } 
+  } else if (request.method === 'POST') {
+    if (request.url === '/classes/messages' ) {
       
-      
+      request.on('data', saveMessage);
+    
       statusCode = 201;
+      
       response.writeHead(statusCode, headers);
       response.end();
-    } else {
-    // else
-      // send back 404 status and no data
-      statusCode = 404;
-      response.writeHead(statusCode, headers);
-      response.end();
+      return;
+      
+    // } else if (request.uri === 'http://127.0.0.1:3000/classes/messages') {
+    //   var messageObj = {
+    //     username: request.json.username, 
+    //     message: request.json.message 
+    //   }; 
+      
+    //   messageData.messages.push(messageObj); 
+    //   statusCode = 201;
+    //   response.writeHead(statusCode, headers);
+    //   response.end();
+    //   return;
     }
-  }
+  } 
+  statusCode = 404;
+  response.writeHead(statusCode, headers);
+  response.end();
   
-
-  
-
-  
-
-
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
   // response.end() will be the body of the response - i.e. what shows
@@ -124,8 +115,6 @@ var requestHandler = function(request, response) {
   // node to actually send all the data over to the client.
   // response.end();
 };
-
-
 
 
 exports.requestHandler = requestHandler;
