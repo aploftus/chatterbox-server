@@ -84,20 +84,33 @@ var requestHandler = function(request, response) {
         // end
       response.end(JSON.stringify(sendData));
     } else {
+    // else
+      // send back 404 status and no data
       statusCode = 404;
       response.writeHead(statusCode, headers);
       response.end();
     }
   }
-    // else
-      // send back 404 status and no data
   // if POST: 
+  if (request.method === 'POST') {
+    if (request.url === '/classes/messages') {
     // if endpoint is correct:
       // write head (status 201)
+      statusCode = 201;
+      response.writeHead(statusCode, headers);
+      response.end();
       // add incoming data to data array storage
         // should it be a different file that we read/write from?
           // use fs module! fs.appendFile?
           // we would have to require!
+    } else {
+    // else
+      // send back 404 status and no data
+      statusCode = 404;
+      response.writeHead(statusCode, headers);
+      response.end();
+    }
+  }
 
   
 
