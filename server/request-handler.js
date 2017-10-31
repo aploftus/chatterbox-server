@@ -11,14 +11,8 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-var dataArray = [{createdAt: '2017-10-30T22:25:29.890Z',
-  objectId: 'O6VGwgFH3e',
-  roomname: 'lobby',
-  text: 'so nice',
-  updatedAt: '2017-10-30T22:25:29.890Z',
-  username: 'james'}];
+var messageData = require('./messages.js');
 
-var sendData = { results: dataArray };
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
 // are on different domains, for instance, your chat client.
@@ -36,10 +30,6 @@ var defaultCorsHeaders = {
 };
 
 var requestHandler = function(request, response) {
-
-
-
-
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -82,7 +72,8 @@ var requestHandler = function(request, response) {
         // or do we determine how many to send back?
         // how do we deal with the "order: -createdAt"?
         // end
-      response.end(JSON.stringify(sendData));
+      console.log(messageData.responseData);
+      response.end(JSON.stringify(messageData.responseData));
     } else {
     // else
       // send back 404 status and no data
@@ -96,13 +87,19 @@ var requestHandler = function(request, response) {
     if (request.url === '/classes/messages') {
     // if endpoint is correct:
       // write head (status 201)
+      // add incoming data to data array storage
+        // parse out createdAt, id?, roomname, text,
+        // updatedAt (same as createdAt), username
+      var messageObj = {
+        username: request._postData.username,
+        message: request._postData.message
+      };
+      messageData.messages.push(messageObj);
+      
+      
       statusCode = 201;
       response.writeHead(statusCode, headers);
       response.end();
-      // add incoming data to data array storage
-        // should it be a different file that we read/write from?
-          // use fs module! fs.appendFile?
-          // we would have to require!
     } else {
     // else
       // send back 404 status and no data
@@ -111,6 +108,7 @@ var requestHandler = function(request, response) {
       response.end();
     }
   }
+  
 
   
 
