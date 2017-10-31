@@ -26,18 +26,18 @@ var app = {
     app.$roomSelect.on('change', app.handleRoomChange);
 
     // Fetch previous messages
-    app.startSpinner();
+    // app.startSpinner();
     app.fetch(false);
 
     // Poll for new messages
-    setInterval(function() {
-      app.fetch(true);
-    }, 3000);
+  //   setInterval(function() {
+  //     app.fetch(true);
+  //   }, 3000);
   },
 
   send: function(message) {
-    app.startSpinner();
-
+    // app.startSpinner();
+   
     // POST the message to the server
     $.ajax({
       url: app.server,
@@ -63,6 +63,7 @@ var app = {
       data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
+        console.log('this is our data', data);
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
 
@@ -203,7 +204,7 @@ var app = {
         app.$roomSelect.val(roomname);
       }
     } else {
-      app.startSpinner();
+      // app.startSpinner();
       // Store as undefined for empty names
       app.roomname = app.$roomSelect.val();
     }
