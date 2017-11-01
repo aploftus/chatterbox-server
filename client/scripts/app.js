@@ -30,19 +30,19 @@ var app = {
     app.fetch(false);
 
     // Poll for new messages
-  //   setInterval(function() {
-  //     app.fetch(true);
-  //   }, 3000);
+    // setInterval(function() {
+    //   app.fetch(true);
+    // }, 3000);
   },
 
   send: function(message) {
     // app.startSpinner();
-   
+    console.log(message);
     // POST the message to the server
     $.ajax({
       url: app.server,
       type: 'POST',
-      data: message,
+      data: JSON.stringify(message),
       success: function (data) {
         // Clear messages input
         app.$message.val('');
@@ -60,7 +60,7 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'GET',
-      data: { order: '-createdAt' },
+      // data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
         console.log('this is our data', data);

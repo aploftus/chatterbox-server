@@ -12,6 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 // var messageData = require('./messages.js');
+var url = require('url');
 
 
 
@@ -31,17 +32,29 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
-var messages = [];
+var messages = [
+  {
+    username: 'kaylin',
+    text: 'testing our fetch',
+    objectId: 1
+  }
+];
+var count = 2;
 
 
 var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
-
+  
   var headers = defaultCorsHeaders;
   headers['Content-Type'] = 'application/json';
 
-  var statusCode;
-  
+  var statusCode = 200;
+  if (url.parse(request.url).pathname !== '/chatterbox/classes/messages') {
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
+    response.end('');
+    return;
+  }
   if (request.method === 'OPTIONS') {
     statusCode = 200;
     response.writeHead(statusCode, headers);
@@ -49,34 +62,32 @@ var requestHandler = function(request, response) {
     return;
   }
   if (request.method === 'GET') {
-    if (request.url === '/classes/messages') {
-      statusCode = 200;
-      response.writeHead(statusCode, headers);
-      response.end(JSON.stringify({results: messages}));
-      return;
-    } 
+    statusCode = 200;
+    response.writeHead(statusCode, headers);
+    response.end(JSON.stringify({results: messages}));
+    return;
   } else if (request.method === 'POST') {
-    if (request.url === '/classes/messages' ) {
-      var saveMessage = function(message) {
-        messages.push(message);
-        statusCode = 201;
-        response.writeHead(statusCode, headers);
-        response.end();
-      };
-      
-      var body = '';
-      request.on('data', function(chunk) {
-        body += chunk;
-      });
-      request.on('end', function() {
-        saveMessage(JSON.parse(body));
-      });
-      return;
-    }
-  } 
-  statusCode = 404;
-  response.writeHead(statusCode, headers);
-  response.end();
+    var saveMessage = function(message) {
+      message.objectId = count++;
+      console.log(message.objectId);
+      messages.push(message);
+      statusCode = 201;
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify({objectId: message.objectId}));
+    };
+    
+    var body = '';
+    request.on('data', function(chunk) {
+      console.log(chunk);
+      body += chunk;
+    });
+    
+    request.on('end', function() {
+      console.log(body);
+      saveMessage(JSON.parse(body));
+    });
+    return;
+  }
 };
 
 
